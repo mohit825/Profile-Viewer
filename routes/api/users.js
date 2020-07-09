@@ -9,6 +9,7 @@ const User = require('../../models/Users');
 const { body, validationResult } = require('express-validator');
 
 // GET /api/users
+//Register
 router.post('/', [
     body('name', "Name is Required").not().isEmpty(),
     body('email', "Please include valid Email").isEmail(),
@@ -19,7 +20,7 @@ router.post('/', [
         const ValidationErrors = validationResult(req);
 
         if (!ValidationErrors.isEmpty()) {
-            res.status(422).json({
+            res.status(400).json({
                 Errors: ValidationErrors.array()
             })
         }
@@ -52,7 +53,7 @@ router.post('/', [
                 password: password,
                 avatar: avatar
             });
-            //hashing te password
+            //hashing the password
             let salt = await bcrypt.genSalt(10);
             user.password = await bcrypt.hash(password, salt);
             await user.save();
@@ -63,7 +64,7 @@ router.post('/', [
                 id: user.id
             }
             const key = config.get('jwtKey');
-            const jwtToken = jwt.sign(payload, key ,  { expiresIn: '1h' } , (err,token)=>{
+            const jwtToken = jwt.sign(payload, key ,  { expiresIn: '10h' } , (err,token)=>{
                 if(err) throw err;
 
                 res.json({
